@@ -111,7 +111,8 @@ def upload_experiments(
 
 def main():
     # GCP authentication
-    credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    credentials_path = os.getenv("INPUT_GOOGLE_APPLICATION_CREDENTIALS")
+    print(credentials_path)
     with open(credentials_path) as f:
         sa_details = json.load(f)
     subprocess.run(

@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "kubeflow-github-action"
+version = "0.1.0"
+description = "GitHub Action for deploying a versioned pipeline to Kubeflow Pipelines."
+authors = ["f6wbl6 <tera81318@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+kfp = "1.1"
+pip = "20.3.3"
+isort = "^5.7.0"
+fire = "^0.4.0"
+importlib = "^1.0.4"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

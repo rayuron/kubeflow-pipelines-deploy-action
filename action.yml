@@ -5,9 +5,6 @@ inputs:
   kubeflow_url:
     description: The endpoint where your Kubeflow UI is running. 
     required: true
-  google_application_credentials:
-    description: The path to a google credentials
-    required: true
   client_id:
     description: The IAP client id, which was specified when the kubeflow deployment where setup using IAP.
     required: true

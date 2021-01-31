@@ -1,9 +1,7 @@
 import os
 import sys
-import json
 import yaml
 import logging
-import subprocess
 import importlib.util
 from datetime import datetime
 
@@ -110,24 +108,6 @@ def upload_experiments(
 
 
 def main():
-    # GCP authentication
-    credentials_path = os.getenv("INPUT_GOOGLE_APPLICATION_CREDENTIALS")
-    print(credentials_path)
-    with open(credentials_path) as f:
-        sa_details = json.load(f)
-    subprocess.run(
-        [
-            "gcloud",
-            "auth",
-            "activate-service-account",
-            sa_details["client_email"],
-            "--key-file",
-            credentials_path,
-            "--project",
-            sa_details["project_id"],
-        ]
-    )
-
     # Load pipeline
     pipeline_name = os.getenv("INPUT_PIPELINE_FUNCTION_NAME")
     pipeline_function = load_pipeline_from_path(

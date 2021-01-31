@@ -1,0 +1,25 @@
+name: Compile, Deploy and Run on Kubeflow
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout files in repo
+      uses: actions/checkout@v2
+
+    - name: Submit a pipeline
+      uses: f6wbl6/kubeflow-github-action@master
+      env:
+        GCP_PROJECT: ${{ secrets.GCP_PROJECT }} # required
+        SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
+        GITHUB_SHA: ${{ github.sha }} # set if versioning pipeline with github sha
+      with:
+        KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }} # required
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        PIPELINE_FILE_PATH: "example/example_pipeline.py"
+        PIPELINE_FUNCTION_NAME: "path_csv_pipeline"
+        PIPELINE_PARAMETERS_PATH: "example/parameters.yaml"
+        RUN_PIPELINE: True

@@ -1,39 +1,39 @@
-name: Manage Kubeflow Pipelines on GCP. 
+name: Deploy Kubeflow Pipelines on GCP.
 description: Build, deploy and run a Kubeflow Pipeline on Google Cloud Platform.
-author: Niklas Hansson
+author: f6wbl6
 inputs:
-  KUBEFLOW_URL:
+  kubeflow_url:
     description: The endpoint where your Kubeflow UI is running. 
     required: true
-  CLIENT_ID:
+  client_id:
     description: The IAP client id, which was specified when the kubeflow deployment where setup using IAP.
-    require: true
-  PIPELINE_CODE_PATH:
-    description: The full path name including the filename of the python file that describes the pipeline you want to run on Kubeflow.  This should be relative to the root of the GitHub repository where the Action is triggered.
-    require: true
-  PIPELINE_FUNCTION_NAME:
+    required: true
+  pipeline_file_path:
+    description: |
+      The full path to pipeline.py file.
+      This must be relative to the root of the GitHub repository where the Action is triggered.
+    required: true
+  pipeline_function_name:
     description: The name of the pipeline, this name will be the name of the pipeline in the Kubeflow UI.
-    require: true
-  ENCODED_GOOGLE_APPLICATION_CREDENTIALS:
-    description: The base64 encoded google credentials
     required: true
-  GOOGLE_APPLICATION_CREDENTIALS:
-    description: The path to the decoded google credentials
+  pipeline_parameters_path:
+    description: The full path to parameters.yml which contains pipeline parameters.
     required: true
-  EXPERIMENT_NAME: 
-    description: The name of the experiment name within which the kubeflow experiment should run
-    required: false
-  PIPELINE_NAMESPACE: 
+  pipeline_namespace:
     description: The namespace in which the pipeline should run
     required: false
-  RUN_PIPELINE: 
-    description: Should github action also trigger the pipeline
+  experiment_name:
+    description: The name of the experiment name within which the kubeflow experiment should run
     required: false
-  VERSION_GITHUB_SHA: 
-    description: Should github action also trigger the pipeline
+    default: 'Default'
+  run_pipeline:
+    description: The flag of running the pipeline. If true, your pipeline will run after uploading.
+    required: false
+  recurring_cron_expression:
+    description: CRON string for scheduling recurring pipelines
     required: false
 outputs:
-  WORKFLOW_URL:
+  workflow_url:
     description: URL that is a link to pipeline in Kubeflow
 branding:
   color: 'purple'

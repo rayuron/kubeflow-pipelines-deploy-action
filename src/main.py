@@ -2,6 +2,7 @@ import os
 import sys
 import yaml
 import logging
+import subprocess
 import importlib.util
 from datetime import datetime
 
@@ -108,6 +109,7 @@ def upload_experiments(
 
 
 def main():
+    print(subprocess.run(["gcloud", "--version"]))
     # Load pipeline
     pipeline_name = os.getenv("INPUT_PIPELINE_FUNCTION_NAME")
     pipeline_function = load_pipeline_from_path(

@@ -17,7 +17,7 @@ jobs:
       run: |
         gcloud --version
         echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} > ${GOOGLE_APPLICATION_CREDENTIALS}
-        echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} | gcloud auth activate-service-account --key-file=-
+        echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} | gcloud auth activate-service-account ${SA_EMAIL} --project=${GCP_PROJECT} --key-file=-
 
     - name: Submit a pipeline
       uses: f6wbl6/kubeflow-github-action@master

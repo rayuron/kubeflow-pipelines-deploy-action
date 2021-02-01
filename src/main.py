@@ -123,7 +123,10 @@ def main():
     # Register pipeline
     zip_name = pipeline_function.__name__ + ".zip"
     compiler.Compiler().compile(pipeline_function, zip_name)
-    client = kfp.Client(host=os.getenv("INPUT_KUBEFLOW_URL"))
+    client = kfp.Client(
+        host=os.getenv("INPUT_KUBEFLOW_URL"),
+        existing_token=os.getenv("GOOGLE_APPLICATION_CREDENTIALS"),
+    )
     pipeline_id = upload_pipeline(
         client=client,
         pipeline_zip_path=zip_name,

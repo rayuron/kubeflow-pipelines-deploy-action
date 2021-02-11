@@ -6,9 +6,9 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS }}
-      GOOGLE_APPLICATION_CREDENTIALS: /tmp/credentials.json
+#    env:
+#      GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS }}
+#      GOOGLE_APPLICATION_CREDENTIALS: /tmp/credentials.json
     steps:
     - name: Checkout files in repo
       uses: actions/checkout@v2
@@ -22,9 +22,9 @@ jobs:
     - name: Submit a pipeline
       uses: f6wbl6/kubeflow-github-action@master
       env:
-        GCP_PROJECT: ${GCP_PROJECT} # required
-        SA_EMAIL: ${SA_EMAIL} # required
-        GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS_JSON} # required
+        GCP_PROJECT: ${{ secrets.GCP_PROJECT }} # required
+        SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
       with:
         KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }} # required
         CLIENT_ID: ${{ secrets.CLIENT_ID }}

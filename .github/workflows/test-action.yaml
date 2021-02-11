@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS }} # required
-      GOOGLE_APPLICATION_CREDENTIALS: ./src/tmp/credentials.json
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/credentials.json
     steps:
     - name: Checkout files in repo
       uses: actions/checkout@v2

@@ -13,13 +13,16 @@ def path_csv_pipeline(github_sha: str):
         subprocess.run(["pip", "install", "pandas"])
         import pandas as pd
 
+        # make data
+        data = [
+            [random.random() for _ in range(n_cols)] for __ in range(n_rows)
+        ]
+        columns = [f"col_{i}" for i in range(n_cols)]
+        index = [f"idx_{i}" for i in range(n_rows)]
         df = pd.DataFrame(
-            data=[
-                [random.random() for _ in range(n_cols)]
-                for __ in range(n_rows)
-            ],
-            columns=[f"col_{i}" for i in range(n_cols)],
-            index=[f"idx_{i}" for i in range(n_rows)],
+            data=data,
+            columns=columns,
+            index=index,
         )
         df.to_csv(output_csv_path, index=True)
         print(f"File path: {output_csv_path}")

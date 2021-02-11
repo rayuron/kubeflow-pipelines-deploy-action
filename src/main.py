@@ -111,6 +111,8 @@ def upload_experiments(
 def main():
     # Auth
     # TODO: auth in GHA env
+    subprocess.run(["ls"])
+    subprocess.run(["ls", "/tmp"])
     subprocess.run(
         [
             "gcloud",

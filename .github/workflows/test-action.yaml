@@ -1,14 +1,12 @@
 name: Compile, Deploy and Run on Kubeflow
 on: [push]
 
-# Set environmental variables
-
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS }}
-      GOOGLE_APPLICATION_CREDENTIALS: /tmp/credentials.json
+      GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS }} # required
+      GOOGLE_APPLICATION_CREDENTIALS: ./src/tmp/credentials.json
     steps:
     - name: Checkout files in repo
       uses: actions/checkout@v2
@@ -17,7 +15,6 @@ jobs:
       run: |
         gcloud --version
         echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} > ${GOOGLE_APPLICATION_CREDENTIALS}
-#        echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} | gcloud auth activate-service-account ${SA_EMAIL} --project=${GCP_PROJECT} --key-file=-
 
     - name: Submit a pipeline
       uses: f6wbl6/kubeflow-github-action@master

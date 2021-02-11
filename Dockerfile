@@ -14,4 +14,5 @@ RUN curl -sSL https://sdk.cloud.google.com | bash
 ENV PATH $PATH:/root/google-cloud-sdk/bin
 
 RUN chmod +x /entrypoint.sh
+RUN ls ./src/tmp/
 ENTRYPOINT ["/entrypoint.sh"]

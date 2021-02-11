@@ -8,27 +8,23 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS }}
-#      GOOGLE_APPLICATION_CREDENTIALS: /tmp/credentials.json
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/credentials.json
     steps:
     - name: Checkout files in repo
       uses: actions/checkout@v2
 
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@master
-      with:
-        project_id: ${{ secrets.GCP_PROJECT }}
-        service_account_key: ${{ secrets.GCP_CREDENTIALS }}
-        export_default_credentials: true
-
-    - name: Set credential
-      run: |
-        gcloud --version
+#    - name: Auth gcloud
+#      run: |
+#        gcloud --version
 #        echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} > ${GOOGLE_APPLICATION_CREDENTIALS}
+#        echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} | gcloud auth activate-service-account ${SA_EMAIL} --project=${GCP_PROJECT} --key-file=-
 
     - name: Submit a pipeline
       uses: f6wbl6/kubeflow-github-action@master
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS} # required
+        GCP_PROJECT: ${GCP_PROJECT} # required
+        SA_EMAIL: ${SA_EMAIL} # required
+        GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS_JSON} # required
       with:
         KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }} # required
         CLIENT_ID: ${{ secrets.CLIENT_ID }}

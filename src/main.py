@@ -109,7 +109,19 @@ def upload_experiments(
 
 
 def main():
-    print(subprocess.run(["gcloud", "config", "list"]))
+    # Auth
+    # TODO: auth in GHA env
+    subprocess.run(
+        [
+            "gcloud",
+            "auth",
+            "activate-service-account",
+            os.getenv("SA_EMAIL"),
+            f"--project={os.getenv('GCP_PROJECT')}",
+            f"--key-file={os.getenv('GOOGLE_APPLICATION_CREDENTIALS')}",
+        ]
+    )
+
     # Load pipeline
     pipeline_name = os.getenv("INPUT_PIPELINE_FUNCTION_NAME")
     pipeline_function = load_pipeline_from_path(

@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
-      GOOGLE_APPLICATION_CREDENTIALS_JSON : /tmp/credentials.json
+#      GOOGLE_APPLICATION_CREDENTIALS_JSON : /tmp/credentials.json
     steps:
     - name: Checkout files in repo
       uses: actions/checkout@v2
@@ -14,13 +14,15 @@ jobs:
     - name: Auth gcloud
       run: |
         gcloud --version
-        echo ${GOOGLE_APPLICATION_CREDENTIALS} > ${GOOGLE_APPLICATION_CREDENTIALS_JSON}
+#        echo ${GOOGLE_APPLICATION_CREDENTIALS} > ${GOOGLE_APPLICATION_CREDENTIALS_JSON}
+#        ls /tmp/
 
     - name: Submit a pipeline
       uses: f6wbl6/kubeflow-github-action@master
       env:
         GCP_PROJECT: ${{ secrets.GCP_PROJECT }} # required
         SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
+        GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
       with:
         KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }} # required
         CLIENT_ID: ${{ secrets.CLIENT_ID }}

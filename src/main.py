@@ -91,8 +91,11 @@ def upload_experiments(
     Returns:
         str : The ID of the experiment.
     """
-    experiment_name = "default" if not experiment_name else experiment_name
-    register_name = f"{pipeline_name}-{experiment_name}"
+    register_name = (
+        f"{pipeline_name}-{experiment_name}"
+        if experiment_name != "Default"
+        else experiment_name
+    )
     try:
         experiment_id = client.get_experiment(
             experiment_name=register_name
@@ -106,21 +109,6 @@ def upload_experiments(
 
 
 def main():
-    # Auth
-    # TODO: auth in GHA env
-    # subprocess.run(["ls"])
-    # subprocess.run(["ls", "/tmp/"])
-    # subprocess.run(
-    #     [
-    #         "gcloud",
-    #         "auth",
-    #         "activate-service-account",
-    #         os.getenv("SA_EMAIL"),
-    #         f"--project={os.getenv('GCP_PROJECT')}",
-    #         f"--key-file={os.getenv('GOOGLE_APPLICATION_CREDENTIALS')}",
-    #     ]
-    # )
-
     # Load pipeline
     pipeline_name = os.getenv("INPUT_PIPELINE_FUNCTION_NAME")
     pipeline_function = load_pipeline_from_path(
@@ -136,6 +124,7 @@ def main():
     compiler.Compiler().compile(pipeline_function, zip_name)
     client = kfp.Client(
         host=os.getenv("INPUT_KUBEFLOW_URL"),
+        namespace=os.getenv("INPUT_NAMESPACE"),
     )
     pipeline_id = upload_pipeline(
         client=client,

@@ -59,13 +59,13 @@ def upload_pipeline(
             pipeline_name=pipeline_name,
         ).to_dict()["id"]
         logging.info(f"The pipeline is newly registered : {pipeline_name}")
-
-    # pipeline versioning with GitHub SHA
-    client.upload_pipeline_version(
-        pipeline_package_path=pipeline_zip_path,
-        pipeline_version_name=github_sha,
-        pipeline_id=pipeline_id,
-    )
+    else:
+        # pipeline versioning with GitHub SHA
+        client.upload_pipeline_version(
+            pipeline_package_path=pipeline_zip_path,
+            pipeline_version_name=github_sha,
+            pipeline_id=pipeline_id,
+        )
     return pipeline_id
 
 
@@ -80,7 +80,7 @@ def upload_experiments(
     For clarity, the experiment will be registered to Kubeflow Pipelines named like below:
         {pipeline_name}-{experiment_name}
     If the experiment does not exist, it will be created newly with specified name.
-    If the experiment is not specified, "Default" will be used.
+    If the experiment is not specified, {pipeline_name}-default will be used.
 
     Args:
         client (kfp.Client) : KFP client.
@@ -91,11 +91,8 @@ def upload_experiments(
     Returns:
         str : The ID of the experiment.
     """
-    register_name = (
-        f"{pipeline_name}-{experiment_name}"
-        if experiment_name != "Default"
-        else experiment_name
-    )
+    experiment_name = "default" if not experiment_name else experiment_name
+    register_name = f"{pipeline_name}-{experiment_name}"
     try:
         experiment_id = client.get_experiment(
             experiment_name=register_name
@@ -174,17 +171,19 @@ def main():
             job_name=job_name,
             params=pipeline_params,
         )
+        logging.info(f"A run is created with: {job_name}")
 
     # Set recurring run
     if os.getenv("INPUT_RUN_RECURRING_PIPELINE") == "true":
         job_name = f"Recurring_run_{pipeline_name}_on_{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         client.create_recurring_run(
+            pipeline_id=pipeline_id,
             experiment_id=experiment_id,
             job_name=job_name,
             params=pipeline_params,
-            pipeline_id=pipeline_id,
             cron_expression=os.getenv("INPUT_RECURRING_CRON_EXPRESSION"),
         )
+        logging.info(f"A recurring-run is created with: {job_name}")
 
 
 if __name__ == "__main__":

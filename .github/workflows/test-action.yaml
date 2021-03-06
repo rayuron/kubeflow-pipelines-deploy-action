@@ -4,8 +4,8 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
+#    env:
+#      GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
 
     steps:
     - name: Checkout files in repo
@@ -16,7 +16,7 @@ jobs:
       env:
         GCP_PROJECT: ${{ secrets.GCP_PROJECT }} # required
         SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
-        GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
       with:
         KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }} # required
         CLIENT_ID: ${{ secrets.CLIENT_ID }}

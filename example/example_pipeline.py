@@ -43,7 +43,7 @@ def path_csv_pipeline(github_sha: str):
     @dsl.pipeline(
         name="Sample pipeline", description="Make a csv file and read it."
     )
-    def pipeline(n_cols: int, n_rows: int):
+    def pipeline(n_cols: int = 5, n_rows: int = 3):
         make_csv_task = make_csv(n_cols, n_rows)
         read_csv(input_csv=make_csv_task.outputs["output_csv"])
 

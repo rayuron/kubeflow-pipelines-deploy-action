@@ -109,15 +109,14 @@ def upload_experiments(
 
 
 def main():
+    github_sha = os.getenv("GITHUB_SHA")
+
     # Load pipeline
     pipeline_name = os.getenv("INPUT_PIPELINE_FUNCTION_NAME")
     pipeline_function = load_pipeline_from_path(
         pipeline_func_name=pipeline_name,
         pipeline_file_path=os.getenv("INPUT_PIPELINE_FILE_PATH"),
-    )
-    github_sha = os.getenv("GITHUB_SHA")
-    if os.getenv("INPUT_ARTIFACT_VERSIONING_WITH_GITHUB_SHA") == "true":
-        pipeline_function = pipeline_function(github_sha)
+    )(github_sha)
 
     # Register pipeline
     zip_name = pipeline_function.__name__ + ".zip"

@@ -1,115 +1,125 @@
-# This action Submits Kubeflow Pipelines to Kubeflow cluster running on Google Cloud Platform. 
+# Kubeflow Pipelines Deploy Action
 
-The purpose of this action is to allow for automated deployments of [Kubeflow Pipelines](https://github.com/kubeflow/pipelines) on Google Cloud Platform (GCP). The action will collect the pipeline from a python file and compile it before uploading it to Kubeflow. The Kubeflow deployment must be using [IAP](https://www.kubeflow.org/docs/gke/deploy/monitor-iap-setup/) on GCP to work.
+GitHub Actions for deploying [Kubeflow Pipelines](https://github.com/kubeflow/pipelines) on Google Cloud Platform (GCP). 
 
-# Usage
+## Usage
+### Use Case
 
-## Example Workflow that uses this action 
-
-
-To compile a pipeline and upload it to kubeflow: 
-
-```yaml
-name: Compile and Deploy Kubeflow pipeline
-on: [push]
-
-# Set environmental variables
-
-jobs:
-  build:
-    runs-on: ubuntu-18.04
-    steps:
-    - name: checkout files in repo
-      uses: actions/checkout@master
+This action is intended for developers who manage CI/CD with GitHub Actions. If you handle it with GCP service, see also: [CI/CD workflow use case with GCP service](https://cloud.google.com/solutions/machine-learning/architecture-for-mlops-using-tfx-kubeflow-pipelines-and-cloud-build#cicd_workflow_use_case)
 
 
-    - name: Submit Kubeflow pipeline
-      id: kubeflow
-      uses: NikeNano/kubeflow-github-action@master
-      with:
-        KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }}
-        ENCODED_GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GKE_KEY }}
-        GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcloud-sa.json
-        CLIENT_ID: ${{ secrets.CLIENT_ID }}
-        PIPELINE_CODE_PATH: "example_pipeline.py"
-        PIPELINE_FUNCTION_NAME: "flipcoin_pipeline"
-        PIPELINE_PARAMETERS_PATH: "parameters.yaml"
-        EXPERIMENT_NAME: "Default"
-        RUN_PIPELINE: False
-        VERSION_GITHUB_SHA: False
+### Parameters
 
+The "required" parameters must be set in your GitHub Actions yaml.
+
+| key                       | value                   | default   | required | description                                                                                                                  | 
+| :------------------------ | ----------------------- | --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- | 
+| kubeflow_url              | url string              |           | True     | The endpoint where your Kubeflow UI is running.                                                                              | 
+| pipeline_file_path        | path/to/pipeline.py     |           | True     | The full path to pipeline.py file. This must be relative to the root of the GitHub repository where the Action is triggered. | 
+| pipeline_function_name    | function name string    |           | True     | The name of the pipeline, this name will be the name of the pipeline in the Kubeflow UI.                                     | 
+| pipeline_parameters_path  | path/to/parameters.yaml |           | True     | The full path to parameters.yml which contains pipeline parameters.                                                          | 
+| pipeline_namespace        | namespace string        |           | False    | The namespace in which the pipeline should run.                                                                              | 
+| experiment_name           | any string              | 'Default' | False    | The name of the experiment name within which the kubeflow experiment should run.                                             | 
+| run_pipeline              | True or False           | False     | False    | The flag of running the pipeline. If true, your pipeline will run after uploading.                                           | 
+| recurring_cron_expression | True or False           | False     | False    | CRON string for scheduling recurring pipelines                                                                               | 
+| client_id                 | any string              |           | False    | The IAP client id, which was specified when the kubeflow deployment where setup using IAP.                                   | 
+
+
+The pipeline also must have the GitHub SHA as a parameter, as shown below:
+
+```python
+from kfp import dsl
+def path_csv_pipeline(github_sha: str): # Required parameter for versioning artifacts
+    # Define component
+    ...
+
+    # pipeline
+    @dsl.pipeline
+    def pipeline(n_cols: int = 5, n_rows: int = 3):
+        # Define your pipeline
+        ...
+        # End of pipeline
+    
+    return pipeline
 ```
 
-If you also would like to run it use the following: 
+
+### Example Usage and Workflow
+
+The following example code is from here ([example/example_pipeline.py](https://github.com/f6wbl6/kubeflow-github-action/tree/master/example)).
+
+#### Define Pipeline
+
+Your pipeline must be defined inside any function. The following example uses `@func_to_container_op` to declare a component, but it can be defined in any format (self built component.yaml, official component file from [Kubeflow](https://github.com/kubeflow/pipelines), etc.).
+
+```python
+def path_csv_pipeline(github_sha: str): # Required parameter for versioning artifacts
+    """Making arbitrary Dataframe with specified columns and rows"""
+
+    @func_to_container_op
+    def make_csv(n_cols: int, n_rows: int, output_csv_path: OutputPath("CSV")):
+        ...
+
+    @func_to_container_op
+    def read_csv(input_csv_path: InputPath("CSV")):
+        ...
+
+    # pipeline
+    @dsl.pipeline(
+        name="Sample pipeline", description="Make a csv file and read it."
+    )
+    def pipeline(n_cols: int = 5, n_rows: int = 3):
+        make_csv_task = make_csv(n_cols, n_rows)
+        read_csv(input_csv=make_csv_task.outputs["output_csv"])
+
+    return pipeline
+```
+
+
+#### Define Workflow for Run only once
 
 ```yaml
 name: Compile, Deploy and Run on Kubeflow
-on: [push]
-
-# Set environmental variables
+on:
+  pull_request:
+    branches:
+      - 'master'
+    types: [opened, synchronize, closed]
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
+
     steps:
-    - name: checkout files in repo
-      uses: actions/checkout@master
+    - name: Checkout files in repo
+      uses: actions/checkout@v2
 
-
-    - name: Submit Kubeflow pipeline
-      id: kubeflow
-      uses: NikeNano/kubeflow-github-action@master
+    - name: Submit a pipeline
+      uses: f6wbl6/kubeflow-github-action@master
+      env:
+        SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
+        GITHUB_SHA: ${{ github.sha }} # required
       with:
-        KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }}
-        ENCODED_GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GKE_KEY }}
-        GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcloud-sa.json
+        KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }} # required
+        PIPELINE_FILE_PATH: "example/example_pipeline.py" # required
+        PIPELINE_FUNCTION_NAME: "path_csv_pipeline" # required
+        PIPELINE_PARAMETERS_PATH: "example/parameters.yaml" # required
         CLIENT_ID: ${{ secrets.CLIENT_ID }}
-        PIPELINE_CODE_PATH: "example_pipeline.py"
-        PIPELINE_FUNCTION_NAME: "flipcoin_pipeline"
-        PIPELINE_PARAMETERS_PATH: "parameters.yaml"
-        EXPERIMENT_NAME: "Default"
-        RUN_PIPELINE: True
-        VERSION_GITHUB_SHA: False
+        RUN_PIPELINE: True # Run pipeline if set as "True"
 
 ```
-The repo also contains an example where the containers in the pipeline are versioned with the github hash in order to improve operations and tracking of errors. However this requires that the pipelines function to be wrapped in a function with one argument: 
 
-```python 
+#### Define Workflow for Recurring Run (Periodical Execution)
 
-  def pipeline(github_sha :str):
-      ... 
-      
-```
-
-the containers is versioned with the hash: 
+A cron string needs to be configured. See here for an example configuration: [Cron Expressions](https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm)
 
 
-```python
-  pre_image = f"gcr.io/{project}/pre_image:{github_sha}"
-  train_forecast_image = f"gcr.io/{project}/train_forecast_image:{github_sha}"
+## Acknowledgment
 
-```
-      
-for example see [here](https://github.com/NikeNano/kubeflow-github-action/blob/master/forecast_peython_wiki/deployment/pipline.py)
-
-## Mandatory inputs
-
-1) KUBEFLOW_URL: The URL to your kubeflow deployment
-2) GKE_KEY: Service account with access to kubeflow and rights to deploy, see [here](http://amygdala.github.io/kubeflow/ml/2019/08/22/remote-deploy.html) for example, the credentials needs to be bas64 encode:
-
-``` bash
-cat path-to-key.json | base64
-```
-3) GOOGLE_APPLICATION_CREDENTIALS: The path to where you like to store the secrets, which needs to be decoded from GKE_KEY
-3) CLIENT_ID: The IAP client secret
-4) PIPELINE_CODE_PATH: The full path to the python file containing the pipeline
-5) PIPELINE_FUNCTION_NAME: The name of the pipeline function the PIPELINE_CODE_PATH file
-6) PIPELINE_PARAMETERS_PATH: The pipeline parameters
-7) EXPERIMENT_NAME: The name of the kubeflow experiment within which the pipeline should run
-8) RUN_PIPELINE: If you like to also run the pipeline set "True"
-9) VERSION_GITHUB_SHA: If the pipeline containers are versioned with the github hash
+This action is forked from [NikeNano's kubeflow-github-action](https://github.com/NikeNano/kubeflow-github-action). Thanks!
 
 
-# Future work
+## Example Workflow that uses this action 
 
-Add so that pipelines can be scheduled to run as well. Soooon done! 
+Coming soon.

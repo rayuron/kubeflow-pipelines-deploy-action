@@ -5,9 +5,6 @@ inputs:
   kubeflow_url:
     description: The endpoint where your Kubeflow UI is running. 
     required: true
-  client_id:
-    description: The IAP client id, which was specified when the kubeflow deployment where setup using IAP.
-    required: true
   pipeline_file_path:
     description: |
       The full path to pipeline.py file.
@@ -32,11 +29,14 @@ inputs:
   recurring_cron_expression:
     description: CRON string for scheduling recurring pipelines
     required: false
+  client_id:
+    description: The IAP client id, which was specified when the kubeflow deployment where setup using IAP.
+    required: false
 outputs:
   workflow_url:
     description: URL that is a link to pipeline in Kubeflow
 branding:
-  color: 'purple'
+  color: 'blue'
   icon: 'upload-cloud'
 runs:
   using: 'docker'

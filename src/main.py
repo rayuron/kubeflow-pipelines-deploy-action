@@ -2,7 +2,6 @@ import os
 import sys
 import yaml
 import logging
-import subprocess
 import importlib.util
 from datetime import datetime
 

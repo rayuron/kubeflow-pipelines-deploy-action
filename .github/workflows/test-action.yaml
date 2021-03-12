@@ -1,5 +1,9 @@
 name: Compile, Deploy and Run on Kubeflow
-on: [push]
+on:
+  pull_request:
+    branches:
+      - 'master'
+    types: [opened, synchronize, closed]
 
 jobs:
   build:
@@ -12,7 +16,6 @@ jobs:
     - name: Submit a pipeline
       uses: f6wbl6/kubeflow-github-action@master
       env:
-        GCP_PROJECT: ${{ secrets.GCP_PROJECT }} # required
         SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
         GITHUB_SHA: ${{ github.sha }} # set if versioning pipeline with github sha

@@ -161,7 +161,7 @@ def main():
         logging.info(f"A run is created with: {job_name}")
 
     # Set recurring run
-    if os.getenv("INPUT_RUN_RECURRING_PIPELINE") == "true":
+    if os.getenv("INPUT_RECURRING_CRON_EXPRESSION") is not None:
         job_name = f"Recurring_run_{pipeline_name}_on_{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         client.create_recurring_run(
             pipeline_id=pipeline_id,

@@ -2,6 +2,7 @@ import os
 import sys
 import yaml
 import logging
+import subprocess
 import importlib.util
 from datetime import datetime
 
@@ -90,11 +91,8 @@ def upload_experiments(
     Returns:
         str : The ID of the experiment.
     """
-    register_name = (
-        f"{pipeline_name}-{experiment_name}"
-        if experiment_name != "Default"
-        else experiment_name
-    )
+    experiment_name = "default" if not experiment_name else experiment_name
+    register_name = f"{pipeline_name}-{experiment_name}"
     try:
         experiment_id = client.get_experiment(
             experiment_name=register_name

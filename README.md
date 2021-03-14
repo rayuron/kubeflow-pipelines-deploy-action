@@ -10,8 +10,6 @@ This action is intended for developers who manage CI/CD with GitHub Actions. If 
 
 ### Parameters
 
-The "required" parameters must be set in your GitHub Actions yaml.
-
 | key                       | value                   | default   | required | description                                                                                                                  | 
 | :------------------------ | ----------------------- | --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- | 
 | kubeflow_url              | url string              |           | True     | The endpoint where your Kubeflow UI is running.                                                                              | 
@@ -112,14 +110,28 @@ jobs:
 
 #### Define Workflow for Recurring Run (Periodical Execution)
 
-A cron string needs to be configured. See here for an example configuration: [Cron Expressions](https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm)
+A cron string should be configured. See here for an example configuration: [Cron Expressions](https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm)
 
+```yaml
+...
+
+    - name: Submit a pipeline
+      uses: f6wbl6/kubeflow-github-action@master
+      env:
+        SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
+        GITHUB_SHA: ${{ github.sha }} # required
+      with:
+        KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }} # required
+        PIPELINE_FILE_PATH: "example/example_pipeline.py" # required
+        PIPELINE_FUNCTION_NAME: "path_csv_pipeline" # required
+        PIPELINE_PARAMETERS_PATH: "example/parameters.yaml" # required
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        RUN_PIPELINE: True # Run pipeline if set as "True"
+        RECURRING_CRON_EXPRESSION: "0 0 8 * * ?" # Run daily at 8:00 on GKE time zone
+
+```
 
 ## Acknowledgment
 
 This action is forked from [NikeNano's kubeflow-github-action](https://github.com/NikeNano/kubeflow-github-action). Thanks!
-
-
-## Example Workflow that uses this action 
-
-Coming soon.

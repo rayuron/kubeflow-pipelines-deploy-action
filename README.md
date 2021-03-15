@@ -93,10 +93,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Submit a pipeline
-      uses: f6wbl6/kubeflow-github-action@master
+      uses: f6wbl6/kubeflow-pipelines-deploy-action@master
       env:
-        SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
+        SA_EMAIL: ${{ secrets.SA_EMAIL }} # required: Service Account E-mail
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required: Contents of service account credentials
         GITHUB_SHA: ${{ github.sha }} # required
       with:
         KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }} # required
@@ -117,6 +117,12 @@ A cron string should be configured. See here for an example configuration: [Cron
 
     - name: Submit a pipeline
       uses: f6wbl6/kubeflow-github-action@master
+      env:
+        SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
+        GITHUB_SHA: ${{ github.sha }} # required
+    - name: Submit a pipeline
+      uses: f6wbl6/kubeflow-pipelines-deploy-action@master
       env:
         SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required

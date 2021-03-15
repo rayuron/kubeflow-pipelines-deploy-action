@@ -17,7 +17,7 @@ jobs:
       uses: f6wbl6/kubeflow-pipelines-deploy-action@master
       env:
         SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
+        GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS }} # required
         GITHUB_SHA: ${{ github.sha }} # set if versioning pipeline with github sha
       with:
         KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }} # required

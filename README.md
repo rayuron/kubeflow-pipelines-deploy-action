@@ -44,7 +44,7 @@ def path_csv_pipeline(github_sha: str): # Required parameter for versioning arti
 
 ### Example Usage and Workflow
 
-The following example code is from here ([example/example_pipeline.py](https://github.com/f6wbl6/kubeflow-github-action/tree/master/example)).
+The following example code is from here ([example/example_pipeline.py](https://github.com/f6wbl6/kubeflow-pipelines-deploy-action/tree/master/example)).
 
 #### Define Pipeline
 
@@ -96,7 +96,7 @@ jobs:
       uses: f6wbl6/kubeflow-pipelines-deploy-action@master
       env:
         SA_EMAIL: ${{ secrets.SA_EMAIL }} # required: Service Account E-mail
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required: Contents of service account credentials
+        GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS }} # required: JSON contents of service account credentials
         GITHUB_SHA: ${{ github.sha }} # required
       with:
         KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }} # required
@@ -116,16 +116,10 @@ A cron string should be configured. See here for an example configuration: [Cron
 ...
 
     - name: Submit a pipeline
-      uses: f6wbl6/kubeflow-github-action@master
-      env:
-        SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
-        GITHUB_SHA: ${{ github.sha }} # required
-    - name: Submit a pipeline
       uses: f6wbl6/kubeflow-pipelines-deploy-action@master
       env:
         SA_EMAIL: ${{ secrets.SA_EMAIL }} # required
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }} # required
+        GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_CREDENTIALS }} # required
         GITHUB_SHA: ${{ github.sha }} # required
       with:
         KUBEFLOW_URL: ${{ secrets.KUBEFLOW_URL }} # required

@@ -1,9 +1,5 @@
 name: Compile, Deploy and Run on Kubeflow
-on:
-  pull_request:
-    branches:
-      - 'master'
-    types: [opened, synchronize, closed]
+on: [ push ]
 
 jobs:
   build:

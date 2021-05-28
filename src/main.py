@@ -91,7 +91,7 @@ def upload_experiments(
         str : The ID of the experiment.
     """
     register_name = (
-        f"{experiment_name}"
+        experiment_name
         if experiment_name != "Default"
         else experiment_name
     )
